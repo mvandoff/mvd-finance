@@ -22,12 +22,9 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const headers = new Headers(optionsHeaders)
 
-  if (!headers.has("Accept")) {
-    headers.set("Accept", "application/json")
-  }
+  if (!headers.has("Accept")) headers.set("Accept", "application/json")
 
   const requestBody = getRequestBody(body)
-
   if (requestBody.isJson && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json")
   }
@@ -61,10 +58,7 @@ function getRequestBody(body: ApiFetchOptions["body"]): {
   body: BodyInit | null | undefined
   isJson: boolean
 } {
-  if (typeof body === "undefined") {
-    return { body: undefined, isJson: false }
-  }
-
+  if (typeof body === "undefined") return { body: undefined, isJson: false }
   if (Array.isArray(body) || isPlainObject(body)) {
     return { body: JSON.stringify(body), isJson: true }
   }
@@ -81,21 +75,14 @@ function isPlainObject(value: unknown): value is Record<string, JsonValue> {
 }
 
 async function parseResponseBody(response: Response): Promise<unknown> {
-  if (response.status === 204) {
-    return undefined
-  }
+  if (response.status === 204) return undefined
 
   const text = await response.text()
-
-  if (!text) {
-    return undefined
-  }
+  if (!text) return undefined
 
   const contentType = response.headers.get("Content-Type")
 
-  if (contentType?.includes("application/json")) {
-    return JSON.parse(text)
-  }
+  if (contentType?.includes("application/json")) return JSON.parse(text)
 
   return text
 }
