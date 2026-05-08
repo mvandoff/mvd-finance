@@ -8,7 +8,7 @@ const requireAuth: Route.ClientMiddlewareFunction = async ({ request }, next) =>
 
   console.log(`[auth] protected route middleware: ${url.pathname}`)
 
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     const searchParams = new URLSearchParams({
       redirectTo: `${url.pathname}${url.search}`,
     })

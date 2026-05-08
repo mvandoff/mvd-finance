@@ -1,3 +1,5 @@
+import { QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import {
   Links,
   Meta,
@@ -12,6 +14,7 @@ import {
   LoadingScreen,
   NavigationLoadingIndicator,
 } from "~/components/LoadingScreen"
+import { queryClient } from "~/lib/query-client"
 import type { Route } from "./+types/root"
 import "./app.css"
 
@@ -42,10 +45,11 @@ export default function App() {
   const isNavigating = Boolean(navigation.location)
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       {isNavigating ? <NavigationLoadingIndicator /> : null}
       <Outlet />
-    </>
+      {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} /> : null}
+    </QueryClientProvider>
   )
 }
 
