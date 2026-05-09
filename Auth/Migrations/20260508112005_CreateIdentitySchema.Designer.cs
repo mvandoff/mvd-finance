@@ -8,9 +8,9 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace api.Migrations
+namespace api.Auth.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(AuthDbContext))]
     [Migration("20260508112005_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {

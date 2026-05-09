@@ -1,3 +1,4 @@
+using api.Auth;
 using api.Startup;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
@@ -30,7 +31,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(
         options.Password.RequireUppercase = false;
     }
 )
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<AuthDbContext>();
 
 var app = builder.Build();
 
