@@ -51,6 +51,15 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
   return user
 }
 
+export async function logout(): Promise<void> {
+  await apiFetch<void>(API_ROUTES.auth.logout, {
+    method: "POST",
+  })
+
+  queryClient.setQueryData(currentUserQueryKey, null)
+  useAuthStore.getState().clearUser()
+}
+
 export function useAuth() {
   return useAuthStore()
 }

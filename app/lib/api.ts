@@ -13,6 +13,7 @@ type ApiFetchOptions = Omit<RequestInit, "body"> & {
 export const API_ROUTES = {
   auth: {
     login: "/auth/login",
+    logout: "/auth/logout",
     me: "/auth/me",
   },
 } as const

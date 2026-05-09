@@ -2,6 +2,7 @@ import * as React from "react"
 import { NavLink, useLocation } from "react-router"
 
 import { NavUser } from "~/components/nav-user"
+import { useAuth } from "~/lib/auth"
 import {
   Sidebar,
   SidebarContent,
@@ -23,11 +24,6 @@ import {
 } from "lucide-react"
 
 const data = {
-  user: {
-    name: "Matt",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navItems: [
     {
       title: "Dashboard",
@@ -59,6 +55,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation()
+  const { user } = useAuth()
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -98,7 +95,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="pb-4">
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
