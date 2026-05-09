@@ -69,6 +69,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               MVD Finance
             </span>
           </div>
+          {/* Collapses the desktop sidebar; mobile opening lives in PageHeader. */}
           <SidebarTrigger className="shrink-0" />
         </div>
         <div className="mx-auto hidden h-px w-8 bg-sidebar-border group-data-[collapsible=icon]:block" />
