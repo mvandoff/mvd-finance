@@ -49,9 +49,9 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       {isNavigating ? <NavigationLoadingIndicator /> : null}
       <Outlet />
-      {import.meta.env.DEV ? (
+      {/* {import.meta.env.DEV ? (
         <ReactQueryDevtools initialIsOpen={false} />
-      ) : null}
+      ) : null} */}
     </QueryClientProvider>
   )
 }
