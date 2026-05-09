@@ -2,36 +2,53 @@ import { queryOptions } from "@tanstack/react-query"
 
 import { apiFetch, API_ROUTES } from "~/lib/api"
 import { queryClient } from "~/lib/query-client"
-import { useAuthStore } from "~/stores/auth-store"
+import { useAuthStore, type AuthUser } from "~/stores/auth-store"
 
-const authStatusQueryKey = ["auth", "status"] as const
+type LoginCredentials = {
+  email: string
+  password: string
+}
 
-async function fetchAuthStatus(): Promise<boolean> {
+const currentUserQueryKey = ["auth", "me"] as const
+
+async function fetchCurrentUser(): Promise<AuthUser | null> {
   try {
-    return await apiFetch<boolean>(API_ROUTES.auth.status)
+    return await apiFetch<AuthUser>(API_ROUTES.auth.me)
   } catch {
-    return false
+    return null
   }
 }
 
 export async function isAuthenticated(): Promise<boolean> {
-  const authenticated = await queryClient.fetchQuery(
+  const user = await queryClient.fetchQuery(
     queryOptions({
-      queryKey: authStatusQueryKey,
-      queryFn: fetchAuthStatus,
+      queryKey: currentUserQueryKey,
+      queryFn: fetchCurrentUser,
       staleTime: 30_000,
     })
   )
 
   const authStore = useAuthStore.getState()
 
-  if (!authenticated) {
+  if (!user) {
     authStore.clearUser()
   } else {
-    authStore.setStatus("authenticated")
+    authStore.setUser(user)
   }
 
-  return authenticated
+  return Boolean(user)
+}
+
+export async function login(credentials: LoginCredentials): Promise<AuthUser> {
+  const user = await apiFetch<AuthUser>(API_ROUTES.auth.login, {
+    method: "POST",
+    body: credentials,
+  })
+
+  queryClient.setQueryData(currentUserQueryKey, user)
+  useAuthStore.getState().setUser(user)
+
+  return user
 }
 
 export function useAuth() {

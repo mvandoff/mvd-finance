@@ -12,7 +12,8 @@ type ApiFetchOptions = Omit<RequestInit, "body"> & {
 
 export const API_ROUTES = {
   auth: {
-    status: "/weatherforecast",
+    login: "/auth/login",
+    me: "/auth/me",
   },
 } as const
 

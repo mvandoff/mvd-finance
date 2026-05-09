@@ -1,4 +1,5 @@
 import { useForm, type SubmitHandler } from "react-hook-form"
+import { useNavigate, useSearchParams } from "react-router"
 
 import { Button } from "~/components/ui/button"
 import {
@@ -8,8 +9,14 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card"
-import { Field, FieldError, FieldGroup, FieldLabel } from "~/components/ui/field"
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
+import { login } from "~/lib/auth"
 import { cn } from "~/lib/utils"
 
 type LoginFormValues = {
@@ -21,10 +28,14 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
     register,
+    setError,
   } = useForm<LoginFormValues>({
     defaultValues: {
       email: "",
@@ -32,8 +43,17 @@ export function LoginForm({
     },
   })
 
-  const onSubmit: SubmitHandler<LoginFormValues> = (values) => {
-    console.log(values)
+  const onSubmit: SubmitHandler<LoginFormValues> = async (values) => {
+    try {
+      await login(values)
+      await navigate(getRedirectTo(searchParams.get("redirectTo")), {
+        replace: true,
+      })
+    } catch {
+      setError("root", {
+        message: "Invalid email or password.",
+      })
+    }
   }
 
   return (
@@ -84,8 +104,9 @@ export function LoginForm({
                 <FieldError errors={[errors.password]} />
               </Field>
               <Field>
+                <FieldError errors={[errors.root]} />
                 <Button type="submit" disabled={isSubmitting}>
-                  Login
+                  {isSubmitting ? "Logging in..." : "Login"}
                 </Button>
               </Field>
             </FieldGroup>
@@ -94,4 +115,16 @@ export function LoginForm({
       </Card>
     </div>
   )
+}
+
+function getRedirectTo(redirectTo: string | null) {
+  if (
+    !redirectTo ||
+    !redirectTo.startsWith("/") ||
+    redirectTo.startsWith("//")
+  ) {
+    return "/"
+  }
+
+  return redirectTo
 }
