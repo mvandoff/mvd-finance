@@ -17,6 +17,7 @@ import {
 import { queryClient } from "~/lib/query-client"
 import type { Route } from "./+types/root"
 import "./app.css"
+import { TooltipProvider } from "~/components/ui/tooltip"
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/favicon.svg", type: "image/x-icon" },
@@ -32,7 +33,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -48,7 +49,9 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       {isNavigating ? <NavigationLoadingIndicator /> : null}
       <Outlet />
-      {import.meta.env.DEV ? <ReactQueryDevtools initialIsOpen={false} /> : null}
+      {import.meta.env.DEV ? (
+        <ReactQueryDevtools initialIsOpen={false} />
+      ) : null}
     </QueryClientProvider>
   )
 }
