@@ -1,5 +1,4 @@
 import { QueryClientProvider } from "@tanstack/react-query"
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import {
   Links,
   Meta,
@@ -14,10 +13,10 @@ import {
   LoadingScreen,
   NavigationLoadingIndicator,
 } from "~/components/LoadingScreen"
+import { TooltipProvider } from "~/components/ui/tooltip"
 import { queryClient } from "~/lib/query-client"
 import type { Route } from "./+types/root"
 import "./app.css"
-import { TooltipProvider } from "~/components/ui/tooltip"
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/favicon.svg", type: "image/x-icon" },

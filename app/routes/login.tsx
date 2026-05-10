@@ -1,4 +1,18 @@
+import { replace } from "react-router"
 import { LoginForm } from "~/components/login-form"
+
+import { isAuthenticated } from "~/lib/auth"
+import type { Route } from "./+types/login"
+
+const redirectIfAuthed: Route.ClientMiddlewareFunction = async (_, next) => {
+  if (await isAuthenticated()) {
+    throw replace(`/`)
+  }
+
+  await next()
+}
+
+export const clientMiddleware = [redirectIfAuthed]
 
 export default function Page() {
   return (

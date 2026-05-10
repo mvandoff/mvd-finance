@@ -1,4 +1,4 @@
-import { Outlet, redirect } from "react-router"
+import { Outlet, replace } from "react-router"
 
 import { AppSidebar } from "~/components/app-sidebar"
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar"
@@ -15,7 +15,7 @@ const requireAuth: Route.ClientMiddlewareFunction = async ({ request }, next) =>
       redirectTo: `${url.pathname}${url.search}`,
     })
 
-    throw redirect(`/login?${searchParams}`)
+    throw replace(`/login?${searchParams}`)
   }
 
   await next()
