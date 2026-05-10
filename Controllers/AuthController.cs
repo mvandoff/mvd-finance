@@ -1,3 +1,5 @@
+using Api.Data.Users;
+using Api.Data.Users.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,22 +12,26 @@ public class AuthController : ControllerBase
 {
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IUserRepository _userRepository;
 
     public AuthController(
         SignInManager<IdentityUser> signInManager,
-        UserManager<IdentityUser> userManager)
+        UserManager<IdentityUser> userManager,
+        IUserRepository userRepository
+    )
     {
         _signInManager = signInManager;
         _userManager = userManager;
+        _userRepository = userRepository;
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthUserResponse>> Login(LoginRequest request)
+    public async Task<ActionResult<UserSummary>> Login(LoginRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user is null)
         {
-            return Unauthorized();
+            return InvalidLoginAttempt();
         }
 
         var result = await _signInManager.PasswordSignInAsync(
@@ -37,10 +43,20 @@ public class AuthController : ControllerBase
 
         if (!result.Succeeded)
         {
-            return Unauthorized();
+            return InvalidLoginAttempt();
         }
 
-        return ToAuthUserResponse(user);
+        var userSummary = await _userRepository.GetUserSummaryByIdentityId(user.Id);
+        if (userSummary == null)
+        {
+            return Problem(
+                title: "User profile was not found.",
+                detail: "The identity user exists, but no matching finance profile exists for this account.",
+                statusCode: StatusCodes.Status500InternalServerError
+            );
+        }
+
+        return userSummary;
     }
 
     [Authorize]
@@ -53,7 +69,7 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpGet("me")]
-    public async Task<ActionResult<AuthUserResponse>> Me()
+    public async Task<ActionResult<UserSummary>> Me()
     {
         var user = await _userManager.GetUserAsync(User);
         if (user is null)
@@ -61,12 +77,26 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
-        return ToAuthUserResponse(user);
+        var userSummary = await _userRepository.GetUserSummaryByIdentityId(user.Id);
+        if (userSummary == null)
+        {
+            return Problem(
+                title: "User profile was not found.",
+                detail: "The identity user exists, but no matching finance profile exists for this account.",
+                statusCode: StatusCodes.Status500InternalServerError
+            );
+        }
+
+        return userSummary;
     }
 
-    private static AuthUserResponse ToAuthUserResponse(IdentityUser user)
+    private UnauthorizedObjectResult InvalidLoginAttempt()
     {
-        return new AuthUserResponse(user.Id, user.Email, null);
+        return Unauthorized(new ProblemDetails
+        {
+            Title = "Invalid email or password.",
+            Status = StatusCodes.Status401Unauthorized,
+        });
     }
 }
 
