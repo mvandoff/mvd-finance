@@ -1,7 +1,7 @@
-using api.Auth;
-using api.Data;
-using api.Data.Users;
-using api.Startup;
+using Api.Auth;
+using Api.Data;
+using Api.Data.Users;
+using Api.Startup;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

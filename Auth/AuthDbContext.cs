@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace api.Auth;
+namespace Api.Auth;
 
 public class AuthDbContext : IdentityDbContext<IdentityUser>
 {

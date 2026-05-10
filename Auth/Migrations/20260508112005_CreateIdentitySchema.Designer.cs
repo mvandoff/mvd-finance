@@ -8,7 +8,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace api.Auth.Migrations
+namespace Api.Auth.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
     [Migration("20260508112005_CreateIdentitySchema")]

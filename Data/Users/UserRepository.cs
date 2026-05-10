@@ -1,6 +1,6 @@
 using Npgsql;
 
-namespace api.Data.Users;
+namespace Api.Data.Users;
 
 public interface IUserRepository
 {

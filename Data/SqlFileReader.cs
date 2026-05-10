@@ -1,8 +1,8 @@
-namespace api.Data;
+namespace Api.Data;
 
 /// <summary>
 /// Loads SQL files that live beside data-access classes by convention.
-/// For example, api.Data.Users.UserRepository reads from Data/Users/Sql.
+/// For example, Api.Data.Users.UserRepository reads from Data/Users/Sql.
 /// </summary>
 public interface ISqlFileReader<TAnchor>
 {
@@ -20,7 +20,7 @@ public sealed class SqlFileReader<TAnchor> : ISqlFileReader<TAnchor>
 		var anchorNamespace = typeof(TAnchor).Namespace
 			?? throw new InvalidOperationException($"{typeof(TAnchor).Name} must have a namespace to locate SQL files.");
 
-		// Repositories live under api.Data.{Feature}; strip everything through Data
+		// Repositories live under Api.Data.{Feature}; strip everything through Data
 		// so the remaining namespace maps to a folder under the copied Data directory.
 		const string dataNamespace = ".Data.";
 		var dataNamespaceIndex = anchorNamespace.IndexOf(dataNamespace, StringComparison.Ordinal);

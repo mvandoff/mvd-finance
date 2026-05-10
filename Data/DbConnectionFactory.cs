@@ -3,7 +3,7 @@
 using System.Data.Common;
 using Npgsql;
 
-namespace api.Data;
+namespace Api.Data;
 
 public interface IDbConnectionFactory
 {

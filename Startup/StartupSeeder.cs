@@ -1,7 +1,7 @@
-using api.Data.Users;
+using Api.Data.Users;
 using Microsoft.AspNetCore.Identity;
 
-namespace api.Startup;
+namespace Api.Startup;
 
 public static class StartupSeeder
 {
