@@ -3,6 +3,8 @@ using Api.Data;
 using Api.Data.Users;
 using Api.Startup;
 
+using Dapper;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +14,7 @@ using Scalar.AspNetCore;
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
+Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -45,8 +48,7 @@ builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 
 // Open generic registrations let repositories request SQL helpers anchored to their own folder.
 builder.Services.AddSingleton(typeof(ISqlFileReader<>), typeof(SqlFileReader<>));
-builder.Services.AddSingleton(typeof(ISqlCommandFactory<>), typeof(SqlCommandFactory<>));
-// builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
+builder.Services.AddSingleton(typeof(IQueryRunner<>), typeof(QueryRunner<>));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 

@@ -1,4 +1,3 @@
-using Npgsql;
 using Api.Data.Users.Models;
 
 namespace Api.Data.Users;
@@ -11,39 +10,28 @@ public interface IUserRepository
 
 public sealed class UserRepository : IUserRepository
 {
-	private readonly ISqlCommandFactory<UserRepository> _sqlCommandFactory;
+	private readonly IQueryRunner<UserRepository> _queryRunner;
 
-	public UserRepository(ISqlCommandFactory<UserRepository> sqlCommandFactory)
+	public UserRepository(IQueryRunner<UserRepository> queryRunner)
 	{
-		_sqlCommandFactory = sqlCommandFactory;
+		_queryRunner = queryRunner;
 	}
 
 	public async Task CreateIfMissingAsync(string email, string name, string identityId, CancellationToken cancellationToken = default)
 	{
-		await using var cmd = await _sqlCommandFactory.CreateAsync("create_user_if_missing", cancellationToken);
-
-		cmd.Parameters.Add(new NpgsqlParameter { Value = email });
-		cmd.Parameters.Add(new NpgsqlParameter { Value = name });
-		cmd.Parameters.Add(new NpgsqlParameter { Value = identityId });
-
-		await cmd.ExecuteNonQueryAsync(cancellationToken);
+		await _queryRunner.ExecuteAsync(
+			"create_user_if_missing",
+			new { Email = email, Name = name, IdentityId = identityId },
+			cancellationToken
+		);
 	}
 
 	public async Task<UserSummary?> GetUserSummaryByIdentityId(string identityId, CancellationToken cancellationToken = default)
 	{
-		await using var cmd = await _sqlCommandFactory.CreateAsync("get_user_summary", cancellationToken);
-
-		cmd.Parameters.Add(new NpgsqlParameter { Value = identityId });
-
-		await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-		if (!await reader.ReadAsync(cancellationToken))
-		{
-			return null;
-		}
-
-		var email = reader.GetString(reader.GetOrdinal("email"));
-		var name = reader.GetString(reader.GetOrdinal("name"));
-
-		return new UserSummary(email, name);
+		return await _queryRunner.QuerySingleOrDefaultAsync<UserSummary>(
+			"get_user_summary",
+			new { IdentityId = identityId },
+			cancellationToken
+		);
 	}
 }

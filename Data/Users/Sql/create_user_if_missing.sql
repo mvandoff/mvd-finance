@@ -1,3 +1,3 @@
 INSERT INTO users (email, name, identity_id)
-VALUES ($1, $2, $3)
+VALUES (@Email, @Name, @IdentityId)
 ON CONFLICT (identity_id) DO NOTHING;
