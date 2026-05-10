@@ -1,9 +1,14 @@
 using api.Auth;
+using api.Data.Sql;
+using api.Data.Users;
 using api.Startup;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
 
+using Npgsql;
+
+using Scalar.AspNetCore;
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +37,16 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(
     }
 )
     .AddEntityFrameworkStores<AuthDbContext>();
+
+
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing.");
+builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
+
+builder.Services.AddSingleton(typeof(ISqlFileReader<>), typeof(SqlFileReader<>));
+// builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 
