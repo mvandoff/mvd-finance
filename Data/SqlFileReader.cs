@@ -1,4 +1,4 @@
-namespace api.Data.Sql;
+namespace api.Data;
 
 /// <summary>
 /// Loads SQL files that live beside data-access classes by convention.

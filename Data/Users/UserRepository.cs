@@ -1,4 +1,3 @@
-using api.Data.Sql;
 using Npgsql;
 
 namespace api.Data.Users;

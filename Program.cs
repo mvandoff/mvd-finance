@@ -1,5 +1,5 @@
 using api.Auth;
-using api.Data.Sql;
+using api.Data;
 using api.Data.Users;
 using api.Startup;
 
