@@ -43,8 +43,9 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' is missing.");
 builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 
-// Open generic registration lets repositories request ISqlFileReader<TRepository>.
+// Open generic registrations let repositories request SQL helpers anchored to their own folder.
 builder.Services.AddSingleton(typeof(ISqlFileReader<>), typeof(SqlFileReader<>));
+builder.Services.AddSingleton(typeof(ISqlCommandFactory<>), typeof(SqlCommandFactory<>));
 // builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
