@@ -30,24 +30,24 @@ const data = {
       url: "/",
       icon: LayoutDashboardIcon,
     },
-    {
-      title: "Accounts",
-      url: "/accounts",
-      icon: WalletIcon,
-    },
-    {
-      title: "Transactions",
-      url: "/transactions",
-      icon: ReceiptTextIcon,
-    },
-    {
-      title: "Budgets",
-      url: "/budgets",
-      icon: PiggyBankIcon,
-    },
+    // {
+    //   title: "Accounts",
+    //   url: "/accounts",
+    //   icon: WalletIcon,
+    // },
+    // {
+    //   title: "Transactions",
+    //   url: "/transactions",
+    //   icon: ReceiptTextIcon,
+    // },
+    // {
+    //   title: "Budgets",
+    //   url: "/budgets",
+    //   icon: PiggyBankIcon,
+    // },
     {
       title: "Settings",
-      url: "/settings",
+      url: "/settings/security",
       icon: SettingsIcon,
     },
   ],
@@ -60,17 +60,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="pb-3 group-data-[collapsible=icon]:pb-4">
-        <div className="flex min-w-0 items-center justify-between gap-2 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-3">
-          <div className="flex h-10 min-w-0 items-center gap-3 px-2 text-sm font-medium group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+        <div className="relative flex min-w-0 items-center justify-center gap-2 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-3">
+          <div className="flex h-10 items-center px-2 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
             <div className="flex size-8 items-center justify-center bg-blue-800 text-white">
               <ReceiptIcon className="size-5" />
             </div>
-            <span className="truncate group-data-[collapsible=icon]:hidden">
-              MVD Finance
-            </span>
           </div>
           {/* Collapses the desktop sidebar; mobile opening lives in PageHeader. */}
-          <SidebarTrigger className="shrink-0" />
+          <SidebarTrigger className="absolute right-2 shrink-0 group-data-[collapsible=icon]:static" />
         </div>
         <div className="mx-auto hidden h-px w-8 bg-sidebar-border group-data-[collapsible=icon]:block" />
       </SidebarHeader>
@@ -78,7 +75,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu className="px-2">
           {data.navItems.map((item) => {
             const Icon = item.icon
-            const isActive = location.pathname === item.url
+            const isActive =
+              location.pathname === item.url ||
+              location.pathname.startsWith(`${item.url}/`)
 
             return (
               <SidebarMenuItem key={item.title}>
