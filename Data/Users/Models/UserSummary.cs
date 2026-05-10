@@ -1,3 +1,7 @@
 namespace Api.Data.Users.Models;
 
-public record UserSummary(string Email, string Name);
+public sealed class UserSummary
+{
+	public string Email { get; set; } = "";
+	public string Name { get; set; } = "";
+}
