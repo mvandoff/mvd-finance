@@ -60,7 +60,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="pb-3 group-data-[collapsible=icon]:pb-4">
-        <div className="relative flex min-w-0 items-center justify-center gap-2 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-3">
+        <div className="relative flex min-w-0 items-center justify-start gap-2 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-3">
           <div className="flex h-10 items-center px-2 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
             <div className="flex size-8 items-center justify-center bg-blue-800 text-white">
               <ReceiptIcon className="size-5" />
