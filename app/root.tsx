@@ -17,6 +17,7 @@ import { TooltipProvider } from "~/components/ui/tooltip"
 import { queryClient } from "~/lib/query-client"
 import type { Route } from "./+types/root"
 import "./app.css"
+import { Toaster } from "sonner"
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/favicon.svg", type: "image/x-icon" },
@@ -35,6 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <TooltipProvider>{children}</TooltipProvider>
         <ScrollRestoration />
         <Scripts />
+        <Toaster />
       </body>
     </html>
   )
