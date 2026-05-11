@@ -38,8 +38,8 @@ export function LoginForm({
     setError,
   } = useForm<LoginFormValues>({
     defaultValues: {
-      email: "",
-      password: "",
+      email: "mvandoff@gmail.com",
+      password: "a",
     },
   })
 
