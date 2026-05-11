@@ -1,6 +1,7 @@
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 
+import { Spinner } from "~/components/ui/spinner"
 import { cn } from "~/lib/utils"
 
 const buttonVariants = cva(
@@ -41,17 +42,37 @@ const buttonVariants = cva(
 )
 
 function Button({
+  children,
   className,
+  disabled,
+  loading = false,
   variant = "default",
   size = "default",
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonPrimitive.Props &
+  VariantProps<typeof buttonVariants> & {
+    loading?: boolean
+  }) {
   return (
     <ButtonPrimitive
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn("relative", buttonVariants({ variant, size, className }))}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
       {...props}
-    />
+    >
+      {loading && (
+        <Spinner className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+      )}
+      <span
+        className={cn(
+          "inline-flex items-center justify-center gap-[inherit] transition-opacity",
+          loading && "opacity-30"
+        )}
+      >
+        {children}
+      </span>
+    </ButtonPrimitive>
   )
 }
 

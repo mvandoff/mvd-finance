@@ -137,7 +137,7 @@ export function ChangePasswordDialog() {
               <DialogClose render={<Button type="button" variant="outline" />}>
                 Cancel
               </DialogClose>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" loading={isSubmitting}>
                 Save password
               </Button>
             </DialogFooter>

@@ -99,7 +99,7 @@ export function LoginForm({
               </Field>
               <Field>
                 <FieldError errors={[errors.root]} />
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" loading={isSubmitting}>
                   {isSubmitting ? "Logging in..." : "Login"}
                 </Button>
               </Field>
