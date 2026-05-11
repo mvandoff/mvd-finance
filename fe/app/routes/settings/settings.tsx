@@ -1,5 +1,5 @@
 import { PageHeader } from "~/components/page-header"
-import { SecuritySettingsCard } from "./security-settings-card"
+import { SecuritySettingsCard } from "./security/security-settings-card"
 
 import "./settings.css"
 
