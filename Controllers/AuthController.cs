@@ -90,6 +90,30 @@ public class AuthController : ControllerBase
         return userSummary;
     }
 
+    [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _userManager.ChangePasswordAsync(
+            user,
+            request.CurrentPassword,
+            request.NewPassword
+        );
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
+        }
+
+        return NoContent();
+    }
+
     private UnauthorizedObjectResult InvalidLoginAttempt()
     {
         return Unauthorized(new ProblemDetails
@@ -101,3 +125,7 @@ public class AuthController : ControllerBase
 }
 
 public record LoginRequest(string Email, string Password);
+public record ChangePasswordRequest(
+    string CurrentPassword,
+    string NewPassword
+);
