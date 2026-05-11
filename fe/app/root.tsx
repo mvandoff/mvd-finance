@@ -13,11 +13,11 @@ import {
   LoadingScreen,
   NavigationLoadingIndicator,
 } from "~/components/LoadingScreen"
+import { Toaster } from "~/components/ui/sonner"
 import { TooltipProvider } from "~/components/ui/tooltip"
 import { queryClient } from "~/lib/query-client"
 import type { Route } from "./+types/root"
 import "./app.css"
-import { Toaster } from "sonner"
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/favicon.svg", type: "image/x-icon" },

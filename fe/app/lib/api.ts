@@ -15,6 +15,7 @@ export const API_ROUTES = {
     login: "/auth/login",
     logout: "/auth/logout",
     me: "/auth/me",
+    changePassword: "/auth/change-password",
   },
 } as const
 

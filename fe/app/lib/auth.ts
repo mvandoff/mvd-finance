@@ -60,6 +60,19 @@ export async function logout(): Promise<void> {
   useAuthStore.getState().clearUser()
 }
 
+type ChangePasswordRequest = {
+  currentPassword: string
+  newPassword: string
+}
+export async function changePassword(
+  request: ChangePasswordRequest
+): Promise<void> {
+  await apiFetch<void>(API_ROUTES.auth.changePassword, {
+    method: "POST",
+    body: request,
+  })
+}
+
 export function useAuth() {
   return useAuthStore()
 }

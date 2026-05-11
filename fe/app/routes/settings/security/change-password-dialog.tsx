@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useForm, type SubmitHandler } from "react-hook-form"
+import { toast } from "sonner"
 
 import { Button } from "~/components/ui/button"
 import {
@@ -19,6 +20,7 @@ import {
   FieldLabel,
 } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
+import { changePassword } from "~/lib/auth"
 
 type ChangePasswordFormValues = {
   currentPassword: string
@@ -52,9 +54,20 @@ export function ChangePasswordDialog() {
     }
   }
 
-  const onSubmit: SubmitHandler<ChangePasswordFormValues> = () => {
-    reset()
-    setOpen(false)
+  const onSubmit: SubmitHandler<ChangePasswordFormValues> = async (values) => {
+    try {
+      await changePassword({
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      })
+      toast.success("Password changed successfully.")
+      reset()
+      setOpen(false)
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Sorry, something went wrong."
+      )
+    }
   }
 
   return (
