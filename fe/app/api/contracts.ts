@@ -1,5 +1,5 @@
 // API contract types should mirror backend request/response models; this file can be replaced by generation later.
-export type UserSummary = {
+export type UserSummaryDto = {
   email: string
   name: string
 }

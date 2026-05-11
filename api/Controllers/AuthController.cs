@@ -1,3 +1,5 @@
+using Api.Contracts.Auth;
+using Api.Contracts.Users;
 using Api.Data.Users;
 using Api.Data.Users.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -26,7 +28,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<UserSummary>> Login(LoginRequest request)
+    public async Task<ActionResult<UserSummaryDto>> Login(LoginRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user is null)
@@ -56,7 +58,7 @@ public class AuthController : ControllerBase
             );
         }
 
-        return userSummary;
+        return ToDto(userSummary);
     }
 
     [Authorize]
@@ -69,7 +71,7 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpGet("me")]
-    public async Task<ActionResult<UserSummary>> Me()
+    public async Task<ActionResult<UserSummaryDto>> Me()
     {
         var user = await _userManager.GetUserAsync(User);
         if (user is null)
@@ -87,7 +89,7 @@ public class AuthController : ControllerBase
             );
         }
 
-        return userSummary;
+        return ToDto(userSummary);
     }
 
     [Authorize]
@@ -122,10 +124,9 @@ public class AuthController : ControllerBase
             Status = StatusCodes.Status401Unauthorized,
         });
     }
-}
 
-public record LoginRequest(string Email, string Password);
-public record ChangePasswordRequest(
-    string CurrentPassword,
-    string NewPassword
-);
+    private static UserSummaryDto ToDto(UserSummary userSummary)
+    {
+        return new UserSummaryDto(userSummary.Email, userSummary.Name);
+    }
+}

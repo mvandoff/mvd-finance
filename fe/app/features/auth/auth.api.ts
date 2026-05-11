@@ -1,17 +1,17 @@
 import type {
   ChangePasswordRequest,
   LoginRequest,
-  UserSummary,
+  UserSummaryDto,
 } from "~/api/contracts"
 import { API_ROUTES } from "~/api/api-routes"
 import { apiFetch } from "~/lib/api"
 
-function getCurrentUser(): Promise<UserSummary> {
-  return apiFetch<UserSummary>(API_ROUTES.auth.me)
+function getCurrentUser(): Promise<UserSummaryDto> {
+  return apiFetch<UserSummaryDto>(API_ROUTES.auth.me)
 }
 
-function login(params: LoginRequest): Promise<UserSummary> {
-  return apiFetch<UserSummary>(API_ROUTES.auth.login, {
+function login(params: LoginRequest): Promise<UserSummaryDto> {
+  return apiFetch<UserSummaryDto>(API_ROUTES.auth.login, {
     method: "POST",
     body: params,
   })

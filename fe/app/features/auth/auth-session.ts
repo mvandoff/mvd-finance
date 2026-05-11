@@ -1,13 +1,13 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import type { LoginRequest, UserSummary } from "~/api/contracts"
+import type { LoginRequest, UserSummaryDto } from "~/api/contracts"
 import authApi from "~/features/auth/auth.api"
 import { useAuthStore } from "~/features/auth/auth-store"
 import { queryClient } from "~/lib/query-client"
 
 const currentUserQueryKey = ["auth", "me"] as const
 
-async function fetchCurrentUser(): Promise<UserSummary | null> {
+async function fetchCurrentUser(): Promise<UserSummaryDto | null> {
   try {
     return await authApi.getCurrentUser()
   } catch {
@@ -35,7 +35,7 @@ export async function isAuthenticated(): Promise<boolean> {
   return Boolean(user)
 }
 
-export async function login(params: LoginRequest): Promise<UserSummary> {
+export async function login(params: LoginRequest): Promise<UserSummaryDto> {
   const user = await authApi.login(params)
 
   queryClient.setQueryData(currentUserQueryKey, user)

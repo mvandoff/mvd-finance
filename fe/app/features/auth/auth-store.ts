@@ -1,14 +1,14 @@
 import { create } from "zustand"
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware"
 
-import type { UserSummary } from "~/api/contracts"
+import type { UserSummaryDto } from "~/api/contracts"
 
 export type AuthStatus = "unknown" | "authenticated" | "unauthenticated"
 
 type AuthStore = {
   status: AuthStatus
-  user: UserSummary | null
-  setUser: (user: UserSummary) => void
+  user: UserSummaryDto | null
+  setUser: (user: UserSummaryDto) => void
   clearUser: () => void
   setStatus: (status: AuthStatus) => void
 }

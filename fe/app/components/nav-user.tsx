@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar"
-import type { UserSummary } from "~/api/contracts"
+import type { UserSummaryDto } from "~/api/contracts"
 import { logout } from "~/features/auth/auth-session"
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
 import { useNavigate } from "react-router"
@@ -22,7 +22,7 @@ import { useNavigate } from "react-router"
 export function NavUser({
   user,
 }: {
-  user: UserSummary | null
+  user: UserSummaryDto | null
 }) {
   const { isMobile } = useSidebar()
   const navigate = useNavigate()
