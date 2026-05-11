@@ -2,7 +2,7 @@ import { Outlet, replace } from "react-router"
 
 import { AppSidebar } from "~/components/app-sidebar"
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar"
-import { isAuthenticated } from "~/lib/auth"
+import { isAuthenticated } from "~/features/auth/auth-session"
 import type { Route } from "./+types/protected-layout"
 
 const requireAuth: Route.ClientMiddlewareFunction = async ({ request }, next) => {

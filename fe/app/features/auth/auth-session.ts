@@ -1,19 +1,15 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import { apiFetch, API_ROUTES } from "~/lib/api"
+import type { LoginRequest, UserSummary } from "~/api/contracts"
+import authApi from "~/features/auth/auth.api"
+import { useAuthStore } from "~/features/auth/auth-store"
 import { queryClient } from "~/lib/query-client"
-import { useAuthStore, type AuthUser } from "~/stores/auth-store"
-
-type LoginCredentials = {
-  email: string
-  password: string
-}
 
 const currentUserQueryKey = ["auth", "me"] as const
 
-async function fetchCurrentUser(): Promise<AuthUser | null> {
+async function fetchCurrentUser(): Promise<UserSummary | null> {
   try {
-    return await apiFetch<AuthUser>(API_ROUTES.auth.me)
+    return await authApi.getCurrentUser()
   } catch {
     return null
   }
@@ -39,11 +35,8 @@ export async function isAuthenticated(): Promise<boolean> {
   return Boolean(user)
 }
 
-export async function login(credentials: LoginCredentials): Promise<AuthUser> {
-  const user = await apiFetch<AuthUser>(API_ROUTES.auth.login, {
-    method: "POST",
-    body: credentials,
-  })
+export async function login(params: LoginRequest): Promise<UserSummary> {
+  const user = await authApi.login(params)
 
   queryClient.setQueryData(currentUserQueryKey, user)
   useAuthStore.getState().setUser(user)
@@ -52,25 +45,10 @@ export async function login(credentials: LoginCredentials): Promise<AuthUser> {
 }
 
 export async function logout(): Promise<void> {
-  await apiFetch<void>(API_ROUTES.auth.logout, {
-    method: "POST",
-  })
+  await authApi.logout()
 
   queryClient.setQueryData(currentUserQueryKey, null)
   useAuthStore.getState().clearUser()
-}
-
-type ChangePasswordRequest = {
-  currentPassword: string
-  newPassword: string
-}
-export async function changePassword(
-  request: ChangePasswordRequest
-): Promise<void> {
-  await apiFetch<void>(API_ROUTES.auth.changePassword, {
-    method: "POST",
-    body: request,
-  })
 }
 
 export function useAuth() {

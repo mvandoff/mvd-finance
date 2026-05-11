@@ -20,7 +20,7 @@ import {
   FieldLabel,
 } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
-import { changePassword } from "~/lib/auth"
+import authApi from "~/features/auth/auth.api"
 
 type ChangePasswordFormValues = {
   currentPassword: string
@@ -56,7 +56,7 @@ export function ChangePasswordDialog() {
 
   const onSubmit: SubmitHandler<ChangePasswordFormValues> = async (values) => {
     try {
-      await changePassword({
+      await authApi.changePassword({
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       })

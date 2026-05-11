@@ -14,15 +14,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar"
-import { logout } from "~/lib/auth"
-import type { AuthUser } from "~/stores/auth-store"
+import type { UserSummary } from "~/api/contracts"
+import { logout } from "~/features/auth/auth-session"
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
 import { useNavigate } from "react-router"
 
 export function NavUser({
   user,
 }: {
-  user: AuthUser | null
+  user: UserSummary | null
 }) {
   const { isMobile } = useSidebar()
   const navigate = useNavigate()

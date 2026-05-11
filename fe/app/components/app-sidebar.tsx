@@ -2,7 +2,7 @@ import * as React from "react"
 import { NavLink, useLocation } from "react-router"
 
 import { NavUser } from "~/components/nav-user"
-import { useAuth } from "~/lib/auth"
+import { useAuth } from "~/features/auth/auth-session"
 import {
   Sidebar,
   SidebarContent,

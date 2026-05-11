@@ -10,15 +10,6 @@ type ApiFetchOptions = Omit<RequestInit, "body"> & {
   body?: BodyInit | JsonBody | null
 }
 
-export const API_ROUTES = {
-  auth: {
-    login: "/auth/login",
-    logout: "/auth/logout",
-    me: "/auth/me",
-    changePassword: "/auth/change-password",
-  },
-} as const
-
 export async function apiFetch<T>(
   path: string,
   { body, headers: optionsHeaders, ...options }: ApiFetchOptions = {}

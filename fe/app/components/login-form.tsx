@@ -16,7 +16,7 @@ import {
   FieldLabel,
 } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
-import { login } from "~/lib/auth"
+import { login } from "~/features/auth/auth-session"
 import { cn } from "~/lib/utils"
 
 type LoginFormValues = {
