@@ -19,6 +19,11 @@ export type LoginRequest = {
     password: string;
 };
 
+export type MfaSetupDto = {
+    sharedKey: string;
+    authenticatorUri: string;
+};
+
 export type ProblemDetails = {
     type?: null | string;
     title?: null | string;
@@ -143,3 +148,32 @@ export type PostAuthChangePasswordResponses = {
 };
 
 export type PostAuthChangePasswordResponse = PostAuthChangePasswordResponses[keyof PostAuthChangePasswordResponses];
+
+export type PostAuthMfaSetupData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/auth/mfa/setup';
+};
+
+export type PostAuthMfaSetupErrors = {
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Internal Server Error
+     */
+    500: ProblemDetails;
+};
+
+export type PostAuthMfaSetupError = PostAuthMfaSetupErrors[keyof PostAuthMfaSetupErrors];
+
+export type PostAuthMfaSetupResponses = {
+    /**
+     * OK
+     */
+    200: MfaSetupDto;
+};
+
+export type PostAuthMfaSetupResponse = PostAuthMfaSetupResponses[keyof PostAuthMfaSetupResponses];

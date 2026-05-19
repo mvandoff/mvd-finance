@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using Api.Contracts.Auth;
 using Api.Contracts.Users;
 using Api.Data.Users;
@@ -125,6 +126,42 @@ public class AuthController : ControllerBase
         }
 
         return NoContent();
+    }
+
+    [Authorize]
+    [HttpPost("mfa/setup")]
+    [ProducesResponseType<MfaSetupDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<MfaSetupDto>> SetupMfa()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+        var sharedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+        if (string.IsNullOrEmpty(sharedKey))
+        {
+            await _userManager.ResetAuthenticatorKeyAsync(user);
+            sharedKey = await _userManager.GetAuthenticatorKeyAsync(user);
+
+            if (string.IsNullOrEmpty(sharedKey))
+            {
+                throw new NotSupportedException("The user manager must produce an authenticator key after reset.");
+            }
+        }
+
+        string authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
+        var urlEncoder = UrlEncoder.Create();
+        return new MfaSetupDto(
+            sharedKey,
+            string.Format(
+                authenticatorUriFormat,
+                urlEncoder.Encode("Clearbook"),
+                urlEncoder.Encode(user.Email!),
+                urlEncoder.Encode(sharedKey)
+        ));
     }
 
     private UnauthorizedObjectResult InvalidLoginAttempt()
