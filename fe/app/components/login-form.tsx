@@ -17,6 +17,7 @@ import {
 } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 import { login } from "~/features/auth/auth-session"
+import { ApiError } from "~/lib/api-error"
 import { cn } from "~/lib/utils"
 
 type LoginFormValues = {
@@ -49,9 +50,12 @@ export function LoginForm({
       await navigate(getRedirectTo(searchParams.get("redirectTo")), {
         replace: true,
       })
-    } catch {
+    } catch (error) {
       setError("root", {
-        message: "Invalid email or password.",
+        message:
+          error instanceof ApiError && error.response.status === 401
+            ? "Invalid email or password."
+            : "Sorry we are experiencing an issue. Please try again later.",
       })
     }
   }
