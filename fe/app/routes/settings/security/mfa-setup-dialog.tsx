@@ -1,5 +1,7 @@
 import { useState } from "react"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useForm, type SubmitHandler } from "react-hook-form"
+import { QRCodeSVG } from "qrcode.react"
 
 import { Button } from "~/components/ui/button"
 import {
@@ -19,16 +21,27 @@ import {
   FieldLabel,
 } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
+import { Spinner } from "~/components/ui/spinner"
+import authApi from "~/features/auth/auth.api"
 
 type MfaSetupFormValues = {
   verificationCode: string
 }
+
+const mfaSetupKeyQueryKey = ["auth", "mfaSetupKey"] as const
 
 /**
  * Multi-factor authentication setup dialog with the verification form shell.
  */
 export function MfaSetupDialog() {
   const [open, setOpen] = useState(false)
+  const queryClient = useQueryClient()
+  const setupQuery = useQuery({
+    queryKey: mfaSetupKeyQueryKey,
+    queryFn: ({ signal }) => authApi.createMfaSetupKey(signal),
+    enabled: open,
+    gcTime: 0,
+  })
   const {
     formState: { errors, isSubmitting },
     handleSubmit,
@@ -45,6 +58,8 @@ export function MfaSetupDialog() {
 
     if (!nextOpen) {
       reset()
+      void queryClient.cancelQueries({ queryKey: mfaSetupKeyQueryKey })
+      queryClient.removeQueries({ queryKey: mfaSetupKeyQueryKey })
     }
   }
 
@@ -81,20 +96,36 @@ export function MfaSetupDialog() {
                 <p>Enter the 6-digit code from the app.</p>
               </div>
             </div>
-            <div
-              className="mfa-setup-qr-placeholder"
-              aria-label="QR code placeholder"
-            >
-              QR code placeholder
-            </div>
-            <div className="mfa-setup-manual-key">
-              <span className="mfa-setup-manual-key-label">
-                Manual setup key
-              </span>
-              <code className="mfa-setup-manual-key-value">
-                Setup key will display here.
-              </code>
-            </div>
+            {setupQuery.isPending && (
+              <div className="mfa-setup-loading">
+                <Spinner className="mfa-setup-loading-spinner" />
+              </div>
+            )}
+            {setupQuery.isError && (
+              <p className="mfa-setup-error">
+                {setupQuery.error instanceof Error
+                  ? setupQuery.error.message
+                  : "Sorry, something went wrong."}
+              </p>
+            )}
+            {setupQuery.isSuccess && (
+              <>
+                <div
+                  className="mfa-setup-qr-placeholder"
+                  aria-label="QR code placeholder"
+                >
+                  <QRCodeSVG value={setupQuery.data.authenticatorUri} />
+                </div>
+                <div className="mfa-setup-manual-key">
+                  <span className="mfa-setup-manual-key-label">
+                    Manual setup key
+                  </span>
+                  <code className="mfa-setup-manual-key-value">
+                    {setupQuery.data.sharedKey}
+                  </code>
+                </div>
+              </>
+            )}
             <Field data-invalid={Boolean(errors.verificationCode)}>
               <FieldLabel htmlFor="mfa-verification-code">
                 Verification code

@@ -19,7 +19,7 @@ export type LoginRequest = {
     password: string;
 };
 
-export type MfaSetupDto = {
+export type MfaSetupKeyDto = {
     sharedKey: string;
     authenticatorUri: string;
 };
@@ -149,14 +149,14 @@ export type PostAuthChangePasswordResponses = {
 
 export type PostAuthChangePasswordResponse = PostAuthChangePasswordResponses[keyof PostAuthChangePasswordResponses];
 
-export type PostAuthMfaSetupData = {
+export type PostAuthMfaCreateSetupKeyData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/auth/mfa/setup';
+    url: '/auth/mfa/create-setup-key';
 };
 
-export type PostAuthMfaSetupErrors = {
+export type PostAuthMfaCreateSetupKeyErrors = {
     /**
      * Unauthorized
      */
@@ -167,13 +167,15 @@ export type PostAuthMfaSetupErrors = {
     500: ProblemDetails;
 };
 
-export type PostAuthMfaSetupError = PostAuthMfaSetupErrors[keyof PostAuthMfaSetupErrors];
+export type PostAuthMfaCreateSetupKeyError =
+    PostAuthMfaCreateSetupKeyErrors[keyof PostAuthMfaCreateSetupKeyErrors];
 
-export type PostAuthMfaSetupResponses = {
+export type PostAuthMfaCreateSetupKeyResponses = {
     /**
      * OK
      */
-    200: MfaSetupDto;
+    200: MfaSetupKeyDto;
 };
 
-export type PostAuthMfaSetupResponse = PostAuthMfaSetupResponses[keyof PostAuthMfaSetupResponses];
+export type PostAuthMfaCreateSetupKeyResponse =
+    PostAuthMfaCreateSetupKeyResponses[keyof PostAuthMfaCreateSetupKeyResponses];

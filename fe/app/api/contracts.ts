@@ -3,4 +3,5 @@ export type {
   ChangePasswordRequest,
   LoginRequest,
   UserSummaryDto,
+  MfaSetupKeyDto,
 } from "~/api/generated/types.gen"

@@ -4,5 +4,6 @@ export const API_ROUTES = {
     logout: "/auth/logout",
     me: "/auth/me",
     changePassword: "/auth/change-password",
+    createMfaSetupKey: "/auth/mfa/create-setup-key",
   },
 } as const

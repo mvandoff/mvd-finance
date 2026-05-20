@@ -129,11 +129,11 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
-    [HttpPost("mfa/setup")]
-    [ProducesResponseType<MfaSetupDto>(StatusCodes.Status200OK)]
+    [HttpPost("mfa/create-setup-key")]
+    [ProducesResponseType<MfaSetupKeyDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<MfaSetupDto>> SetupMfa()
+    public async Task<ActionResult<MfaSetupKeyDto>> CreateMfaSetupKey()
     {
         var user = await _userManager.GetUserAsync(User);
         if (user is null)
@@ -154,7 +154,7 @@ public class AuthController : ControllerBase
 
         string authenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
         var urlEncoder = UrlEncoder.Create();
-        return new MfaSetupDto(
+        return new MfaSetupKeyDto(
             sharedKey,
             string.Format(
                 authenticatorUriFormat,
