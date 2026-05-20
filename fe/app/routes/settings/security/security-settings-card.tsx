@@ -1,5 +1,5 @@
-import { Button } from "~/components/ui/button"
 import { ChangePasswordDialog } from "./change-password-dialog"
+import { MfaSetupDialog } from "./mfa-setup-dialog"
 
 /**
  * Security settings actions for the selected account settings section.
@@ -32,9 +32,7 @@ export function SecuritySettingsCard() {
             Protect your account with an extra security step
           </p>
         </div>
-        <Button type="button" variant="outline">
-          Enable MFA
-        </Button>
+        <MfaSetupDialog />
       </div>
     </section>
   )
