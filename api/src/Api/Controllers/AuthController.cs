@@ -3,6 +3,7 @@ using Api.Contracts.Auth;
 using Api.Contracts.Users;
 using Api.Data.Users;
 using Api.Data.Users.Models;
+using Api.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -104,7 +105,7 @@ public class AuthController : ControllerBase
     [Authorize]
     [HttpPost("change-password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType<IEnumerable<IdentityError>>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
     {
@@ -122,7 +123,7 @@ public class AuthController : ControllerBase
 
         if (!result.Succeeded)
         {
-            return BadRequest(result.Errors);
+            return ApiErrors.IdentityValidationErrors(result.Errors);
         }
 
         return NoContent();
@@ -164,17 +165,47 @@ public class AuthController : ControllerBase
         ));
     }
 
-    private UnauthorizedObjectResult InvalidLoginAttempt()
+    [Authorize]
+    [HttpPost("mfa/set-mfa-enabled")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> SetMfaEnabled(SetMfaEnabledRequst request)
     {
-        return Unauthorized(new ProblemDetails
+        var user = await _userManager.GetUserAsync(User);
+        if (user is null)
         {
-            Title = "Invalid email or password.",
-            Status = StatusCodes.Status401Unauthorized,
-        });
+            return Unauthorized();
+        }
+
+        if (!await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, request.code))
+        {
+            return InvalidTwoFactorCode();
+        }
+
+
+        await _userManager.SetTwoFactorEnabledAsync(user, request.enabled);
+        return NoContent();
+    }
+
+
+    private static UnauthorizedObjectResult InvalidLoginAttempt()
+    {
+        return ApiErrors.UnauthorizedProblem("Invalid email or password.");
+    }
+
+    private static BadRequestObjectResult InvalidTwoFactorCode()
+    {
+        return ApiErrors.ValidationError(
+            "code",
+            "The 2fa token provided by the request was invalid. A valid 2fa token is required to enable 2fa."
+        );
     }
 
     private static UserSummaryDto ToDto(UserSummary userSummary)
     {
         return new UserSummaryDto(userSummary.Email, userSummary.Name);
     }
+
 }
