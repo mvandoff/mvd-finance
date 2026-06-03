@@ -2,6 +2,7 @@ import type {
   ChangePasswordRequest,
   LoginRequest,
   MfaSetupKeyDto,
+  SetMfaEnabledRequest,
   UserSummaryDto,
 } from "~/api/contracts"
 import { API_ROUTES } from "~/api/api-routes"
@@ -38,12 +39,20 @@ function createMfaSetupKey(signal?: AbortSignal): Promise<MfaSetupKeyDto> {
   })
 }
 
+function setMfaEnabled(params: SetMfaEnabledRequest): Promise<UserSummaryDto> {
+  return apiFetch<UserSummaryDto>(API_ROUTES.auth.setMfaEnabled, {
+    method: "POST",
+    body: params,
+  })
+}
+
 const authApi = {
   getCurrentUser,
   login,
   logout,
   changePassword,
   createMfaSetupKey,
+  setMfaEnabled,
 } as const
 
 export default authApi

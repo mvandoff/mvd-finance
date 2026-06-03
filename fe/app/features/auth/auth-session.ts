@@ -1,11 +1,15 @@
 import { queryOptions } from "@tanstack/react-query"
 
-import type { LoginRequest, UserSummaryDto } from "~/api/contracts"
+import type {
+  LoginRequest,
+  SetMfaEnabledRequest,
+  UserSummaryDto,
+} from "~/api/contracts"
 import authApi from "~/features/auth/auth.api"
 import { useAuthStore } from "~/features/auth/auth-store"
 import { queryClient } from "~/lib/query-client"
 
-const currentUserQueryKey = ["auth", "me"] as const
+export const currentUserQueryKey = ["auth", "me"] as const
 
 async function fetchCurrentUser(): Promise<UserSummaryDto | null> {
   try {
@@ -49,6 +53,17 @@ export async function logout(): Promise<void> {
 
   queryClient.setQueryData(currentUserQueryKey, null)
   useAuthStore.getState().clearUser()
+}
+
+export async function setMfaEnabled(
+  params: SetMfaEnabledRequest
+): Promise<UserSummaryDto> {
+  const user = await authApi.setMfaEnabled(params)
+
+  queryClient.setQueryData(currentUserQueryKey, user)
+  useAuthStore.getState().setUser(user)
+
+  return user
 }
 
 export function useAuth() {

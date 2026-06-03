@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useForm, type SubmitHandler } from "react-hook-form"
 import { QRCodeSVG } from "qrcode.react"
+import { toast } from "sonner"
 
 import { Button } from "~/components/ui/button"
 import {
@@ -23,6 +24,9 @@ import {
 import { Input } from "~/components/ui/input"
 import { Spinner } from "~/components/ui/spinner"
 import authApi from "~/features/auth/auth.api"
+import { setMfaEnabled } from "~/features/auth/auth-session"
+import { ApiError } from "~/lib/api-error"
+import type { ValidationProblemDetails } from "~/api/contracts"
 
 type MfaSetupFormValues = {
   verificationCode: string
@@ -31,15 +35,15 @@ type MfaSetupFormValues = {
 const mfaSetupKeyQueryKey = ["auth", "mfaSetupKey"] as const
 
 /**
- * Multi-factor authentication setup dialog with the verification form shell.
+ * Multi-factor authentication toggle dialog with setup details for first-time enablement.
  */
-export function MfaSetupDialog() {
+export function MfaSetupDialog({ isMfaEnabled }: { isMfaEnabled: boolean }) {
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
   const setupQuery = useQuery({
     queryKey: mfaSetupKeyQueryKey,
     queryFn: ({ signal }) => authApi.createMfaSetupKey(signal),
-    enabled: open,
+    enabled: open && !isMfaEnabled,
     gcTime: 0,
   })
   const {
@@ -47,6 +51,7 @@ export function MfaSetupDialog() {
     handleSubmit,
     register,
     reset,
+    setError,
   } = useForm<MfaSetupFormValues>({
     defaultValues: {
       verificationCode: "",
@@ -63,52 +68,93 @@ export function MfaSetupDialog() {
     }
   }
 
-  const onSubmit: SubmitHandler<MfaSetupFormValues> = (values) => {
-    console.log("[mfa-setup]", values)
+  const onSubmit: SubmitHandler<MfaSetupFormValues> = async (values) => {
+    const nextMfaEnabled = !isMfaEnabled
+
+    try {
+      await setMfaEnabled({
+        enabled: nextMfaEnabled,
+        code: values.verificationCode,
+      })
+      toast.success(
+        nextMfaEnabled
+          ? "Multi-factor authentication enabled."
+          : "Multi-factor authentication disabled."
+      )
+      reset()
+      setOpen(false)
+    } catch (error) {
+      const codeErrorMessage = getCodeValidationErrorMessage(error)
+
+      if (codeErrorMessage) {
+        setError("verificationCode", { message: codeErrorMessage })
+        return
+      }
+
+      toast.error(
+        error instanceof Error ? error.message : "Sorry, something went wrong."
+      )
+    }
   }
+
+  const canSubmit = isMfaEnabled || setupQuery.isSuccess
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger render={<Button type="button" variant="outline" />}>
-        Enable MFA
+      <DialogTrigger
+        render={
+          <Button
+            type="button"
+            variant={isMfaEnabled ? "destructive" : "outline"}
+          />
+        }
+      >
+        {isMfaEnabled ? "Disable MFA" : "Enable MFA"}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Set up multi-factor authentication</DialogTitle>
+          <DialogTitle>
+            {isMfaEnabled
+              ? "Disable multi-factor authentication"
+              : "Set up multi-factor authentication"}
+          </DialogTitle>
           <DialogDescription>
-            Connect an authenticator app and enter the generated code to finish
-            setup.
+            {isMfaEnabled
+              ? "Enter the code from your authenticator app to disable MFA."
+              : "Connect an authenticator app and enter the generated code to finish setup."}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup className="gap-4">
-            <div className="mfa-setup-steps" aria-label="Setup steps">
-              <div className="mfa-setup-step">
-                <span className="mfa-setup-step-number">1</span>
-                <p>Open your authenticator app and add a new account.</p>
+            {!isMfaEnabled && (
+              <div className="mfa-setup-steps" aria-label="Setup steps">
+                <div className="mfa-setup-step">
+                  <span className="mfa-setup-step-number">1</span>
+                  <p>Open your authenticator app and add a new account.</p>
+                </div>
+                <div className="mfa-setup-step">
+                  <span className="mfa-setup-step-number">2</span>
+                  <p>Scan the QR code or enter the setup key manually.</p>
+                </div>
+                <div className="mfa-setup-step">
+                  <span className="mfa-setup-step-number">3</span>
+                  <p>Enter the 6-digit code from the app.</p>
+                </div>
               </div>
-              <div className="mfa-setup-step">
-                <span className="mfa-setup-step-number">2</span>
-                <p>Scan the QR code or enter the setup key manually.</p>
-              </div>
-              <div className="mfa-setup-step">
-                <span className="mfa-setup-step-number">3</span>
-                <p>Enter the 6-digit code from the app.</p>
-              </div>
-            </div>
-            {setupQuery.isPending && (
+            )}
+            {!isMfaEnabled && setupQuery.isPending && (
               <div className="mfa-setup-loading">
                 <Spinner className="mfa-setup-loading-spinner" />
               </div>
             )}
-            {setupQuery.isError && (
+            {!isMfaEnabled && setupQuery.isError && (
               <p className="mfa-setup-error">
                 {setupQuery.error instanceof Error
                   ? setupQuery.error.message
                   : "Sorry, something went wrong."}
               </p>
             )}
-            {setupQuery.isSuccess && (
+            {!isMfaEnabled && setupQuery.isSuccess && (
               <>
                 <div
                   className="mfa-setup-qr-placeholder"
@@ -151,13 +197,39 @@ export function MfaSetupDialog() {
               <DialogClose render={<Button type="button" variant="outline" />}>
                 Cancel
               </DialogClose>
-              <Button type="submit" loading={isSubmitting}>
-                Verify code
+              <Button
+                type="submit"
+                loading={isSubmitting}
+                disabled={!canSubmit}
+              >
+                {isMfaEnabled ? "Disable MFA" : "Verify code"}
               </Button>
             </DialogFooter>
           </FieldGroup>
         </form>
       </DialogContent>
     </Dialog>
+  )
+}
+
+function getCodeValidationErrorMessage(error: unknown) {
+  if (!(error instanceof ApiError) || error.response.status !== 400) {
+    return null
+  }
+
+  if (!isValidationProblemDetails(error.body)) {
+    return null
+  }
+
+  return error.body.errors?.code?.[0] ?? null
+}
+
+function isValidationProblemDetails(
+  value: unknown
+): value is ValidationProblemDetails {
+  return (
+    value !== null &&
+    typeof value === "object" &&
+    Object.getPrototypeOf(value) === Object.prototype
   )
 }

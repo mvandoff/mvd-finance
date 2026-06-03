@@ -1,3 +1,3 @@
 namespace Api.Contracts.Users;
 
-public sealed record UserSummaryDto(string Email, string Name);
+public sealed record UserSummaryDto(string Email, string Name, bool IsMfaEnabled);

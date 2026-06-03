@@ -1,10 +1,14 @@
 import { ChangePasswordDialog } from "./change-password-dialog"
 import { MfaSetupDialog } from "./mfa-setup-dialog"
+import { useAuth } from "~/features/auth/auth-session"
 
 /**
  * Security settings actions for the selected account settings section.
  */
 export function SecuritySettingsCard() {
+  const { user } = useAuth()
+  const isMfaEnabled = Boolean(user?.isMfaEnabled)
+
   return (
     <section
       className="settings-security-card"
@@ -29,10 +33,12 @@ export function SecuritySettingsCard() {
             Multi-Factor Authentication
           </h3>
           <p className="settings-security-row-description">
-            Protect your account with an extra security step
+            {isMfaEnabled
+              ? "MFA is enabled for your account"
+              : "Protect your account with an extra security step"}
           </p>
         </div>
-        <MfaSetupDialog />
+        <MfaSetupDialog isMfaEnabled={isMfaEnabled} />
       </div>
     </section>
   )

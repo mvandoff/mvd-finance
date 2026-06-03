@@ -63,7 +63,7 @@ public class AuthController : ControllerBase
             );
         }
 
-        return ToDto(userSummary);
+        return ToDto(userSummary, user);
     }
 
     [Authorize]
@@ -99,7 +99,7 @@ public class AuthController : ControllerBase
             );
         }
 
-        return ToDto(userSummary);
+        return ToDto(userSummary, user);
     }
 
     [Authorize]
@@ -167,11 +167,11 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpPost("mfa/set-mfa-enabled")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<UserSummaryDto>(StatusCodes.Status200OK)]
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> SetMfaEnabled(SetMfaEnabledRequst request)
+    public async Task<ActionResult<UserSummaryDto>> SetMfaEnabled(SetMfaEnabledRequst request)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user is null)
@@ -179,16 +179,32 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
-        if (!await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, request.code))
+        if (!await _userManager.VerifyTwoFactorTokenAsync(
+            user,
+            _userManager.Options.Tokens.AuthenticatorTokenProvider,
+            request.code))
         {
             return InvalidTwoFactorCode();
         }
 
+        var result = await _userManager.SetTwoFactorEnabledAsync(user, request.enabled);
+        if (!result.Succeeded)
+        {
+            return ApiErrors.IdentityValidationErrors(result.Errors);
+        }
 
-        await _userManager.SetTwoFactorEnabledAsync(user, request.enabled);
-        return NoContent();
+        var userSummary = await _userRepository.GetUserSummaryByIdentityId(user.Id);
+        if (userSummary == null)
+        {
+            return Problem(
+                title: "User profile was not found.",
+                detail: "The identity user exists, but no matching finance profile exists for this account.",
+                statusCode: StatusCodes.Status500InternalServerError
+            );
+        }
+
+        return ToDto(userSummary, user);
     }
-
 
     private static UnauthorizedObjectResult InvalidLoginAttempt()
     {
@@ -203,9 +219,9 @@ public class AuthController : ControllerBase
         );
     }
 
-    private static UserSummaryDto ToDto(UserSummary userSummary)
+    private static UserSummaryDto ToDto(UserSummary userSummary, IdentityUser identityUser)
     {
-        return new UserSummaryDto(userSummary.Email, userSummary.Name);
+        return new UserSummaryDto(userSummary.Email, userSummary.Name, identityUser.TwoFactorEnabled);
     }
 
 }

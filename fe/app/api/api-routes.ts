@@ -5,5 +5,6 @@ export const API_ROUTES = {
     me: "/auth/me",
     changePassword: "/auth/change-password",
     createMfaSetupKey: "/auth/mfa/create-setup-key",
+    setMfaEnabled: "/auth/mfa/set-mfa-enabled",
   },
 } as const

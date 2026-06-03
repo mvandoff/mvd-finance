@@ -9,11 +9,6 @@ export type ChangePasswordRequest = {
     newPassword: string;
 };
 
-export type IdentityError = {
-    code?: string;
-    description?: string;
-};
-
 export type LoginRequest = {
     email: string;
     password: string;
@@ -32,9 +27,26 @@ export type ProblemDetails = {
     instance?: null | string;
 };
 
+export type SetMfaEnabledRequst = {
+    enabled: boolean;
+    code: string;
+};
+
 export type UserSummaryDto = {
     email: string;
     name: string;
+    isMfaEnabled: boolean;
+};
+
+export type ValidationProblemDetails = {
+    type?: null | string;
+    title?: null | string;
+    status?: null | number | string;
+    detail?: null | string;
+    instance?: null | string;
+    errors?: {
+        [key: string]: Array<string>;
+    };
 };
 
 export type PostAuthLoginData = {
@@ -131,7 +143,7 @@ export type PostAuthChangePasswordErrors = {
     /**
      * Bad Request
      */
-    400: Array<IdentityError>;
+    400: ValidationProblemDetails;
     /**
      * Unauthorized
      */
@@ -167,8 +179,7 @@ export type PostAuthMfaCreateSetupKeyErrors = {
     500: ProblemDetails;
 };
 
-export type PostAuthMfaCreateSetupKeyError =
-    PostAuthMfaCreateSetupKeyErrors[keyof PostAuthMfaCreateSetupKeyErrors];
+export type PostAuthMfaCreateSetupKeyError = PostAuthMfaCreateSetupKeyErrors[keyof PostAuthMfaCreateSetupKeyErrors];
 
 export type PostAuthMfaCreateSetupKeyResponses = {
     /**
@@ -177,5 +188,37 @@ export type PostAuthMfaCreateSetupKeyResponses = {
     200: MfaSetupKeyDto;
 };
 
-export type PostAuthMfaCreateSetupKeyResponse =
-    PostAuthMfaCreateSetupKeyResponses[keyof PostAuthMfaCreateSetupKeyResponses];
+export type PostAuthMfaCreateSetupKeyResponse = PostAuthMfaCreateSetupKeyResponses[keyof PostAuthMfaCreateSetupKeyResponses];
+
+export type PostAuthMfaSetMfaEnabledData = {
+    body: SetMfaEnabledRequst;
+    path?: never;
+    query?: never;
+    url: '/auth/mfa/set-mfa-enabled';
+};
+
+export type PostAuthMfaSetMfaEnabledErrors = {
+    /**
+     * Bad Request
+     */
+    400: ValidationProblemDetails;
+    /**
+     * Unauthorized
+     */
+    401: ProblemDetails;
+    /**
+     * Internal Server Error
+     */
+    500: ProblemDetails;
+};
+
+export type PostAuthMfaSetMfaEnabledError = PostAuthMfaSetMfaEnabledErrors[keyof PostAuthMfaSetMfaEnabledErrors];
+
+export type PostAuthMfaSetMfaEnabledResponses = {
+    /**
+     * OK
+     */
+    200: UserSummaryDto;
+};
+
+export type PostAuthMfaSetMfaEnabledResponse = PostAuthMfaSetMfaEnabledResponses[keyof PostAuthMfaSetMfaEnabledResponses];
