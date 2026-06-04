@@ -1,3 +1,3 @@
 namespace Api.Contracts.Auth;
 
-public sealed record SetMfaEnabledRequst(bool enabled, string code);
+public sealed record SetMfaEnabledRequest(bool enabled, string code);

@@ -14,7 +14,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "~/components/ui/sidebar"
-import type { UserSummaryDto } from "~/api/contracts"
+import type { UserSummaryDto } from "~/api/generated/types.gen"
 import { logout } from "~/features/auth/auth-session"
 import { ChevronsUpDownIcon, LogOutIcon } from "lucide-react"
 import { useNavigate } from "react-router"

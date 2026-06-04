@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware"
 
-import type { UserSummaryDto } from "~/api/contracts"
+import type { UserSummaryDto } from "~/api/generated/types.gen"
 
 export type AuthStatus = "unknown" | "authenticated" | "unauthenticated"
 

@@ -2,10 +2,10 @@ import { queryOptions } from "@tanstack/react-query"
 
 import type {
   LoginRequest,
-  LoginResponse,
+  PostAuthLoginResponse,
   SetMfaEnabledRequest,
   UserSummaryDto,
-} from "~/api/contracts"
+} from "~/api/generated/types.gen"
 import authApi from "~/features/auth/auth.api"
 import { useAuthStore } from "~/features/auth/auth-store"
 import { queryClient } from "~/lib/query-client"
@@ -40,7 +40,7 @@ export async function isAuthenticated(): Promise<boolean> {
   return Boolean(user)
 }
 
-export async function login(params: LoginRequest): Promise<LoginResponse> {
+export async function login(params: LoginRequest): Promise<PostAuthLoginResponse> {
   const response = await authApi.login(params)
 
   if (!response.userSummary) {

@@ -26,7 +26,7 @@ import { Spinner } from "~/components/ui/spinner"
 import authApi from "~/features/auth/auth.api"
 import { setMfaEnabled } from "~/features/auth/auth-session"
 import { ApiError } from "~/lib/api-error"
-import type { ValidationProblemDetails } from "~/api/contracts"
+import type { ValidationProblemDetails } from "~/api/generated/types.gen"
 
 type MfaSetupFormValues = {
   verificationCode: string

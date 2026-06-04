@@ -182,7 +182,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<UserSummaryDto>> SetMfaEnabled(SetMfaEnabledRequst request)
+    public async Task<ActionResult<UserSummaryDto>> SetMfaEnabled(SetMfaEnabledRequest request)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user is null)

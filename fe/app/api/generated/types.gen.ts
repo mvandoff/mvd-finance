@@ -32,7 +32,7 @@ export type ProblemDetails = {
     instance?: null | string;
 };
 
-export type SetMfaEnabledRequst = {
+export type SetMfaEnabledRequest = {
     enabled: boolean;
     code: string;
 };
@@ -196,7 +196,7 @@ export type PostAuthMfaCreateSetupKeyResponses = {
 export type PostAuthMfaCreateSetupKeyResponse = PostAuthMfaCreateSetupKeyResponses[keyof PostAuthMfaCreateSetupKeyResponses];
 
 export type PostAuthMfaSetMfaEnabledData = {
-    body: SetMfaEnabledRequst;
+    body: SetMfaEnabledRequest;
     path?: never;
     query?: never;
     url: '/auth/mfa/set-mfa-enabled';

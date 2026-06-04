@@ -1,46 +1,46 @@
 import type {
   ChangePasswordRequest,
   LoginRequest,
-  LoginResponse,
   MfaSetupKeyDto,
+  PostAuthLoginResponse,
   SetMfaEnabledRequest,
   UserSummaryDto,
-} from "~/api/contracts"
+} from "~/api/generated/types.gen"
 import { API_ROUTES } from "~/api/api-routes"
 import { apiFetch } from "~/lib/api"
 
-function getCurrentUser(): Promise<UserSummaryDto> {
+function getCurrentUser() {
   return apiFetch<UserSummaryDto>(API_ROUTES.auth.me)
 }
 
-function login(params: LoginRequest): Promise<LoginResponse> {
-  return apiFetch<LoginResponse>(API_ROUTES.auth.login, {
+function login(params: LoginRequest) {
+  return apiFetch<PostAuthLoginResponse>(API_ROUTES.auth.login, {
     method: "POST",
     body: params,
   })
 }
 
-function logout(): Promise<void> {
+function logout() {
   return apiFetch<void>(API_ROUTES.auth.logout, {
     method: "POST",
   })
 }
 
-function changePassword(params: ChangePasswordRequest): Promise<void> {
+function changePassword(params: ChangePasswordRequest) {
   return apiFetch<void>(API_ROUTES.auth.changePassword, {
     method: "POST",
     body: params,
   })
 }
 
-function createMfaSetupKey(signal?: AbortSignal): Promise<MfaSetupKeyDto> {
+function createMfaSetupKey(signal?: AbortSignal) {
   return apiFetch<MfaSetupKeyDto>(API_ROUTES.auth.createMfaSetupKey, {
     method: "POST",
     signal,
   })
 }
 
-function setMfaEnabled(params: SetMfaEnabledRequest): Promise<UserSummaryDto> {
+function setMfaEnabled(params: SetMfaEnabledRequest) {
   return apiFetch<UserSummaryDto>(API_ROUTES.auth.setMfaEnabled, {
     method: "POST",
     body: params,
