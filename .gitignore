@@ -3,6 +3,7 @@ AGENTS.md
 # React Router
 fe/.react-router/
 fe/build/
+fe/.openapi-ts-logs
 
 
 ## Ignore Visual Studio temporary files, build results, and

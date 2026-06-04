@@ -6,6 +6,9 @@ export default defineConfig({
     entryFile: false,
     path: "app/api/generated",
   },
+  logs: {
+    path: ".openapi-ts-logs",
+  },
   plugins: [
     {
       enums: false,
