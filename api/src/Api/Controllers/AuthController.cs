@@ -30,10 +30,10 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    [ProducesResponseType<UserSummaryDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<LoginResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<UserSummaryDto>> Login(LoginRequest request)
+    public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
         if (user is null)
@@ -53,6 +53,11 @@ public class AuthController : ControllerBase
             return InvalidLoginAttempt();
         }
 
+        if (result.RequiresTwoFactor)
+        {
+            return new LoginResponse(true, null);
+        }
+
         var userSummary = await _userRepository.GetUserSummaryByIdentityId(user.Id);
         if (userSummary == null)
         {
@@ -63,7 +68,10 @@ public class AuthController : ControllerBase
             );
         }
 
-        return ToDto(userSummary, user);
+        return new LoginResponse(
+            false,
+            new UserSummaryDto(userSummary.Email, userSummary.Name, user.TwoFactorEnabled)
+        );
     }
 
     [Authorize]
@@ -149,7 +157,9 @@ public class AuthController : ControllerBase
 
             if (string.IsNullOrEmpty(sharedKey))
             {
-                throw new NotSupportedException("The user manager must produce an authenticator key after reset.");
+                throw new NotSupportedException(
+                    "The user manager must produce an authenticator key after reset."
+                );
             }
         }
 
@@ -162,7 +172,8 @@ public class AuthController : ControllerBase
                 urlEncoder.Encode("Clearbook"),
                 urlEncoder.Encode(user.Email!),
                 urlEncoder.Encode(sharedKey)
-        ));
+            )
+        );
     }
 
     [Authorize]
@@ -179,10 +190,13 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
-        if (!await _userManager.VerifyTwoFactorTokenAsync(
-            user,
-            _userManager.Options.Tokens.AuthenticatorTokenProvider,
-            request.code))
+        if (
+            !await _userManager.VerifyTwoFactorTokenAsync(
+                user,
+                _userManager.Options.Tokens.AuthenticatorTokenProvider,
+                request.code
+            )
+        )
         {
             return InvalidTwoFactorCode();
         }
@@ -221,7 +235,10 @@ public class AuthController : ControllerBase
 
     private static UserSummaryDto ToDto(UserSummary userSummary, IdentityUser identityUser)
     {
-        return new UserSummaryDto(userSummary.Email, userSummary.Name, identityUser.TwoFactorEnabled);
+        return new UserSummaryDto(
+            userSummary.Email,
+            userSummary.Name,
+            identityUser.TwoFactorEnabled
+        );
     }
-
 }

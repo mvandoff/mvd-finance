@@ -6,6 +6,7 @@ export type SetMfaEnabledRequest = SetMfaEnabledRequst
 export type {
   ChangePasswordRequest,
   LoginRequest,
+  LoginResponse,
   MfaSetupKeyDto,
   UserSummaryDto,
   ValidationProblemDetails,

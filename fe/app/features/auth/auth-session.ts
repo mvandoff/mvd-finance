@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query"
 
 import type {
   LoginRequest,
+  LoginResponse,
   SetMfaEnabledRequest,
   UserSummaryDto,
 } from "~/api/contracts"
@@ -39,13 +40,20 @@ export async function isAuthenticated(): Promise<boolean> {
   return Boolean(user)
 }
 
-export async function login(params: LoginRequest): Promise<UserSummaryDto> {
-  const user = await authApi.login(params)
+export async function login(params: LoginRequest): Promise<LoginResponse> {
+  const response = await authApi.login(params)
 
-  queryClient.setQueryData(currentUserQueryKey, user)
-  useAuthStore.getState().setUser(user)
+  if (!response.userSummary) {
+    queryClient.setQueryData(currentUserQueryKey, null)
+    useAuthStore.getState().clearUser()
 
-  return user
+    return response
+  }
+
+  queryClient.setQueryData(currentUserQueryKey, response.userSummary)
+  useAuthStore.getState().setUser(response.userSummary)
+
+  return response
 }
 
 export async function logout(): Promise<void> {

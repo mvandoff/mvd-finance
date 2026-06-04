@@ -46,7 +46,12 @@ export function LoginForm({
 
   const onSubmit: SubmitHandler<LoginFormValues> = async (values) => {
     try {
-      await login(values)
+      const response = await login(values)
+
+      if (response.requiresChallenge) {
+        return await navigate("/mfa-challenge", { replace: true })
+      }
+
       await navigate(getRedirectTo(searchParams.get("redirectTo")), {
         replace: true,
       })

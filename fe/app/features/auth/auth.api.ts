@@ -1,6 +1,7 @@
 import type {
   ChangePasswordRequest,
   LoginRequest,
+  LoginResponse,
   MfaSetupKeyDto,
   SetMfaEnabledRequest,
   UserSummaryDto,
@@ -12,8 +13,8 @@ function getCurrentUser(): Promise<UserSummaryDto> {
   return apiFetch<UserSummaryDto>(API_ROUTES.auth.me)
 }
 
-function login(params: LoginRequest): Promise<UserSummaryDto> {
-  return apiFetch<UserSummaryDto>(API_ROUTES.auth.login, {
+function login(params: LoginRequest): Promise<LoginResponse> {
+  return apiFetch<LoginResponse>(API_ROUTES.auth.login, {
     method: "POST",
     body: params,
   })

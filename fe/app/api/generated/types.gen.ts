@@ -14,6 +14,11 @@ export type LoginRequest = {
     password: string;
 };
 
+export type LoginResponse = {
+    requiresChallenge: boolean;
+    userSummary: null | UserSummaryDto;
+};
+
 export type MfaSetupKeyDto = {
     sharedKey: string;
     authenticatorUri: string;
@@ -73,7 +78,7 @@ export type PostAuthLoginResponses = {
     /**
      * OK
      */
-    200: UserSummaryDto;
+    200: LoginResponse;
 };
 
 export type PostAuthLoginResponse = PostAuthLoginResponses[keyof PostAuthLoginResponses];
